@@ -131,15 +131,71 @@ app.get('/api/thoughts/:id', ({ params }, res) => {
     });
 });
 
-app.post('/api/thoughts', ({ body }, res) => {
+app.post('/api/thoughts/:userId', ({ body }, res) => {
   Thought.create(body)
     .then(UserData => res.json(UserData))
     .then(({ _id }) => {
       return User.findOneAndUpdate(
-        { _id: params.pizzaId },
+        { _id: params.userId },
         { $push: { thoughts: _id } },
         { new: true }
       );
     })
     .catch(err => res.json(err))
+});
+
+
+app.delete('/api/thoughts/:userId/:thoughtId', ({ params }, res) => {
+  Thought.findOneAndDelete({ _id: params.thoughtId })
+    .then(UserData => res.json(UserData))
+    .then(({ _id }) => {
+      return User.findOneAndDelete(
+        { _id: params.userId },
+        { $pull: { thoughts: _id } },
+        { new: true }
+      );
+    })
+    .catch(err => res.json(err))
+});
+
+app.put('/api/thought/:id', ({ params, body }, res) => {
+  Thought.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
+    .then(UserData => {
+      if (!UserData) {
+        res.status(404).json({ message: 'No user found with this id!' });
+        return;
+      }
+      res.json(UserData);
+    })
+    .catch(err => res.json(err));
+});
+
+
+
+
+
+app.post('/api/thoughts/:thoughtId/reactions',({ params, body }, res) => {
+  Thought.findOneAndUpdate(
+    { _id: params.thoughtId },
+    { $push: { reactions: body } },
+    { new: true, runValidators: true }
+  )
+    .then(UserData => {
+      if (!UserData) {
+        res.status(404).json({ message: 'No user found with this id!' });
+        return;
+      }
+      res.json(UserData);
+    })
+    .catch(err => res.json(err));
+});
+
+app.delete('/api/thoughts/:thoughtId/reactions/:reactionId',({ params }, res) => {
+  Thought.findOneAndUpdate(
+    { _id: params.thoughtId },
+    { $pull: { reactions: { reactions: params.reactionId } } },
+    { new: true }
+  )
+    .then(UserData => res.json(UserData))
+    .catch(err => res.json(err));
 });
