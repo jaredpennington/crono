@@ -78,3 +78,38 @@ app.delete('/api/users/:id', ({ params }, res) => {
     .then(UserData => res.json(UserData))
     .catch(err => res.json(err))
 });
+
+app.post('/api/users/:userId/friends/:friendId', ({ params }, res) => {
+  User.findOneAndUpdate(
+    { _id: params.id },
+    { $push: { friends: params.friendId } },
+    { new: true }
+  )
+  .then(UserData => {
+    if (!UserData) {
+      res.status(404).json({ message: 'No user found with this id!' });
+      return;
+    }
+    res.json(UserData);
+  })
+  .catch(err => res.json(err));
+});
+
+
+app.delete('/api/users/:userId/friends/:friendId', ({ params }, res) => {
+  User.findOneAndUpdate(
+    { _id: params.id },
+    { $pull: { friends: params.friendId } },
+    { new: true }
+  )
+  .then(UserData => {
+    if (!UserData) {
+      res.status(404).json({ message: 'No user found with this id!' });
+      return;
+    }
+    res.json(UserData);
+  })
+  .catch(err => res.json(err));
+});
+
+
