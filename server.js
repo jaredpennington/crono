@@ -112,4 +112,34 @@ app.delete('/api/users/:userId/friends/:friendId', ({ params }, res) => {
   .catch(err => res.json(err));
 });
 
+app.get('/api/thoughts', ( req, res) => {
+  Thought.find({})
+    .then(UserData => res.json(UserData))
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(400);
+    });
+});
 
+
+app.get('/api/thoughts/:id', ({ params }, res) => {
+  Thought.findOne({ _id: params.id })
+    .then(UserData => res.json(UserData))
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(400);
+    });
+});
+
+app.post('/api/thoughts', ({ body }, res) => {
+  Thought.create(body)
+    .then(UserData => res.json(UserData))
+    .then(({ _id }) => {
+      return User.findOneAndUpdate(
+        { _id: params.pizzaId },
+        { $push: { thoughts: _id } },
+        { new: true }
+      );
+    })
+    .catch(err => res.json(err))
+});
