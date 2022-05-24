@@ -16,6 +16,7 @@ Contributors names and contact info
 
 Jared Pennington
 [@jaredpennington](https://github.com/jaredpennington)
+jaredpennington000@gmail.com
 
 ## Version History
 
